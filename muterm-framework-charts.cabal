@@ -1,0 +1,36 @@
+name:		muterm-framework-charts
+version: 	0.1
+cabal-version:	>= 1.6
+description: 	Rendering proofs in graphviz charts
+license: 	AllRightsReserved
+license-file: 	LICENSE
+copyright:
+author:		Jose Iborra
+maintainer: 	jiborra@dsic.upv.es
+build-type: 	Simple
+stability:
+homepage:	http://safe-tools.dsic.upv.es/narradar
+package-url:
+synopsis:
+category:
+tested-with:	
+source-repository head
+  type:     git
+  location: git://github.com/pepeiborra/muterm-framework-charts.git
+
+Library
+  build-depends: base -any,
+                 muterm-framework,
+                 prettyclass,
+                 suitable,
+                 containers,
+                 graphviz == 2999.1.0.2,
+                 dotgen == 0.3.1,
+                 fgl,
+                 control-monad-free
+
+  exposed-modules:
+      MuTerm.Framework.DotRep,
+      MuTerm.Framework.GraphViz
+
+  Extensions: DeriveFunctor, DeriveFoldable, DeriveTraversable, StandaloneDeriving
