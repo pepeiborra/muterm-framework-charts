@@ -24,12 +24,12 @@ Library
                  prettyclass,
                  suitable,
                  containers,
-                 graphviz == 2999.1.0.2,
                  dotgen == 0.3.1,
                  fgl,
                  control-monad-free
 
   exposed-modules:
+      Data.GraphViz.Attributes
       MuTerm.Framework.DotRep,
       MuTerm.Framework.GraphViz
 
