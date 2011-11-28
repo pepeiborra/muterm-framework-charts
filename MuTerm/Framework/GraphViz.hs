@@ -5,6 +5,7 @@
 {-# LANGUAGE UndecidableInstances, OverlappingInstances #-}
 {-# LANGUAGE NoMonomorphismRestriction #-}
 {-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE DeriveFunctor, DeriveFoldable, DeriveTraversable #-}
 {-# OPTIONS_GHC -fno-warn-unused-matches #-}
 
 -----------------------------------------------------------------------------
