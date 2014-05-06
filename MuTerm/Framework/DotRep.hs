@@ -5,6 +5,7 @@
 {-# LANGUAGE UndecidableInstances, OverlappingInstances, FlexibleInstances #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE DeriveFunctor, DeriveFoldable, DeriveTraversable #-}
+{-# LANGUAGE ExistentialQuantification #-}
 
 -----------------------------------------------------------------------------
 -- |
@@ -27,7 +28,7 @@ import Control.Applicative
 import qualified Data.Graph
 import Data.GraphViz.Attributes
 import Data.Graph.Inductive
-import Data.Graph.Inductive.Tree
+--import Data.Graph.Inductive.Tree
 import Data.Suitable
 import Text.PrettyPrint.HughesPJClass
 

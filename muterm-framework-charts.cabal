@@ -1,5 +1,5 @@
 name:		muterm-framework-charts
-version: 	0.3
+version: 	0.3.1
 cabal-version:	>= 1.6
 description: 	Rendering proofs in graphviz charts
 license: 	AllRightsReserved
