@@ -1,4 +1,5 @@
 {-# LANGUAGE CPP #-}
+{-# LANGUAGE PatternGuards #-}
 {-# LANGUAGE RecordWildCards, NamedFieldPuns #-}
 {-# LANGUAGE ViewPatterns #-}
 {-# LANGUAGE FlexibleContexts, FlexibleInstances #-}
@@ -83,18 +84,19 @@ gs = repG . dotSimple
 data DotProof = DotProof { showFailedPaths :: Bool }
 dotProof = dotProof' DotProof{showFailedPaths=False}
 
-dotProof' :: (IsMZero mp, Traversable mp, DotRep (SomeInfo info)) => DotProof -> Proof info mp a -> String
+dotProof' :: (IsMZero mp, Foldable mp, Traversable mp, DotRep (SomeInfo info)) => DotProof -> Proof info mp a -> String
 dotProof' DotProof{..} p = showDot $ do
                              attribute (Size (Point 100 100))
                              attribute (Compound True)
-                             foldFree (\_ -> colorJoin False [textNode (text "?") []]) f
+                             foldFree (\_ -> colorJoin False [textNode (text "...") []]) f
                               $ annotate (const False) isSuccess
                               $ p
  where
    f (Annotated done Success{..}) = colorJoin done [g problem, g procInfo, textNode (text "YES") [Color $ mkColor "#29431C"]]
    f (Annotated done Refuted{..}) = colorJoin done [g problem, g procInfo, textNode (text "NO")  [Color $ mkColor "#60233E"]]
    f (Annotated _ MDone{})        = mempty
-   f (Annotated done DontKnow{..})= colorJoin done [g procInfo, textNode (text "Don't Know") []]
+   f (Annotated done DontKnow{..})=
+     colorJoin done [g problem, g procInfo, textNode (text "Don't Know") []]
    f (Annotated done (MAnd p1 p2))= do
         (cme, node) <- cluster $ do
                  attribute (Color $ mkColor "#E56A90")
@@ -115,9 +117,11 @@ dotProof' DotProof{..} p = showDot $ do
       | otherwise               = colorJoin done [g procInfo] ->> subProblem
 
 --   f (Annotated done (Search mk)) = colorJoin False [textNode (text " ") []]
+   f (Annotated done (Search mk)) | isMZero mk = mempty
+   f (Annotated done (Search mk)) | [p] <- toList mk = p
    f (Annotated done (Search mk)) = do
-        me <- node' [label $ text"?"] done
-        T.mapM (return me ->>) mk
+        me <- node' [label $ text "OR"] done
+        _ <- T.mapM (return me ->>) mk
         return me
 
    g  = repG . dot
