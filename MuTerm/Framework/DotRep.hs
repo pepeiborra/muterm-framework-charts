@@ -55,8 +55,9 @@ mkColor x = [ColorName x]
 label l = Label (StrLabel ('\"' : renderDot l ++ "\""))
 
 renderDot :: Doc -> String
-renderDot = concatMap escapeNewLines . (`shows` "\\l")
+renderDot doc = concatMap escapeNewLines txt
       where
+        txt = renderStyle style{lineLength=80} (doc <> text "\\l")
         escapeNewLines '\n' = "\\l"
         escapeNewLines c    = [c]
 
