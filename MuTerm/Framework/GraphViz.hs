@@ -89,7 +89,7 @@ dotProof' DotProof{..} p = showDot $ do
                              attribute (Size (Point 100 100))
                              attribute (Compound True)
                              foldFree (\_ -> colorJoin False [textNode (text "...") []]) f
-                              $ annotate (const False) isSuccess
+                              $ annotate isSuccess
                               $ p
  where
    f (Annotated done Success{..}) = colorJoin done [g problem, g procInfo, textNode (text "YES") [Color $ mkColor "#29431C"]]
@@ -118,7 +118,7 @@ dotProof' DotProof{..} p = showDot $ do
 
 --   f (Annotated done (Search mk)) = colorJoin False [textNode (text " ") []]
    f (Annotated done (Search mk)) | isMZero mk = mempty
-   f (Annotated done (Search mk)) | [p] <- toList mk = p
+   f (Annotated done (Search mk)) | [p'] <- toList mk = p'
    f (Annotated done (Search mk)) = do
         me <- node' [label $ text "OR"] done
         _ <- T.mapM (return me ->>) mk
@@ -252,9 +252,9 @@ instance Foldable f => Foldable (AnnotatedF n f) where foldMap f (Annotated _ x)
 instance Traversable f => Traversable (AnnotatedF n f) where traverse f (Annotated n x) = Annotated n <$> traverse f x
 
 dropNotes = foldFree Pure (Impure . dropNote)
-annotate :: Functor f => (a -> b) -> (Free f b -> n) -> Free f a -> Free (AnnotatedF n f) a
-annotate p i = fmap fst . foldFree (\x -> Pure (x,p x))
-               (\x -> Impure (Annotated (i $ Impure $ fmap (dropNotes . fmap snd) x) x))
+annotate :: Functor f => (Free f a -> n) -> Free f a -> Free (AnnotatedF n f) a
+annotate i = foldFree return
+               (\x -> Impure $ Annotated (i $ Impure $ fmap dropNotes x) x)
 
 -- ----------------------------------
 -- Graphing fgl graphs
