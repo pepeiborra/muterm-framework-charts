@@ -34,6 +34,8 @@ import Text.PrettyPrint.HughesPJClass
 
 import MuTerm.Framework.Proof
 
+import Debug.Hoed.Observe
+
 class DotRep a where
    dot, dotSimple :: a -> DotGr
    dotSimple = dot

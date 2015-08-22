@@ -21,12 +21,13 @@ source-repository head
 Library
   build-depends: base -any,
                  muterm-framework,
-                 prettyclass,
+                 pretty,
                  suitable,
                  containers,
                  dotgen == 0.3.1,
                  fgl,
-                 control-monad-free
+                 control-monad-free,
+                 hoed-mini
 
   exposed-modules:
       Data.GraphViz.Attributes
