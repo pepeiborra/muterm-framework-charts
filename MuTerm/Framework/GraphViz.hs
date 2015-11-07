@@ -28,7 +28,7 @@ import Control.Applicative
 import Control.Arrow (first)
 import Control.Monad
 import Control.Monad.Free
-import Control.Monad.Logic
+
 import Data.Foldable (Foldable(..), toList)
 import Data.Traversable as T (Traversable(traverse))
 import qualified Data.Traversable as T
