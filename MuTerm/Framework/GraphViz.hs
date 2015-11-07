@@ -28,7 +28,7 @@ import Control.Applicative
 import Control.Arrow (first)
 import Control.Monad
 import Control.Monad.Free
-
+import Control.Monad.Logic
 import Data.Foldable (Foldable(..), toList)
 import Data.Traversable as T (Traversable(traverse))
 import qualified Data.Traversable as T
@@ -84,7 +84,8 @@ gs = repG . dotSimple
 data DotProof = DotProof { showFailedPaths :: Bool }
 dotProof = dotProof' DotProof{showFailedPaths=False}
 
-dotProof' :: (IsMZero mp, Foldable mp, Traversable mp, DotRep (SomeInfo info)) => DotProof -> Proof info mp a -> String
+dotProof' :: (DotRep (SomeInfo info)
+             ) => DotProof -> Proof info a -> String
 dotProof' DotProof{..} p = showDot $ do
                              attribute (Size (Point 100 100))
                              attribute (Compound True)
@@ -94,16 +95,10 @@ dotProof' DotProof{..} p = showDot $ do
  where
    f (Annotated done Success{..}) = colorJoin done [g problem, g procInfo, textNode (text "YES") [Color $ mkColor "#29431C"]]
    f (Annotated done Refuted{..}) = colorJoin done [g problem, g procInfo, textNode (text "NO")  [Color $ mkColor "#60233E"]]
-   f (Annotated _ MDone{})        = mempty
    f (Annotated done DontKnow{..})=
      colorJoin done [g problem, g procInfo, textNode (text "Don't Know") []]
-   f (Annotated done (MAnd p1 p2))= do
-        (cme, node) <- cluster $ do
-                 attribute (Color $ mkColor "#E56A90")
-                 p1 ->> p2
-        return (mkClusterNode cme <$> node)
 
-
+   f (Annotated done (Aborted msg)) = colorJoin done [textNode (text msg) []]
    f (Annotated done And{subProblems=[p], ..}) = f (Annotated done Single{subProblem = p, ..})
    f (Annotated done And{..}) = do
         let trs = if (done || showFailedPaths) then g problem else return EmptyNode
@@ -116,12 +111,17 @@ dotProof' DotProof{..} p = showDot $ do
       | done || showFailedPaths = colorJoin done [g problem, g procInfo] ->> subProblem
       | otherwise               = colorJoin done [g procInfo] ->> subProblem
 
+   f (Annotated done (OrElse a b)) = do
+        me <- node' [label $ text "OrElse"] done
+        _ <- return me ->> a
+        _ <- return me ->> b
+        return me
 --   f (Annotated done (Search mk)) = colorJoin False [textNode (text " ") []]
-   f (Annotated done (Search mk)) | isMZero mk = mempty
-   f (Annotated done (Search mk)) | [p'] <- toList mk = p'
+   f (Annotated done (Search [])) = mempty
+   f (Annotated done (Search [p])) = p
    f (Annotated done (Search mk)) = do
         me <- node' [label $ text "OR"] done
-        _ <- T.mapM (return me ->>) mk
+        _ <- mapM (return me ->>) mk
         return me
 
    g  = repG . dot
